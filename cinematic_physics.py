@@ -15,7 +15,7 @@ RES_X = 1280
 RES_Y = 720
 
 OUTPUT = os.path.abspath("cinematic_physics.mp4")
-BG_PATH = os.path.abspath("pixar_bg.png")
+BG_PATH = os.path.abspath("1789740957857.png")
 
 random.seed(42)
 
