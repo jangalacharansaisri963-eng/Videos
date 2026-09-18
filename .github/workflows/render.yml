@@ -1,0 +1,62 @@
+
+name: Blender Cinematic Render
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            wget \
+            xz-utils \
+            libx11-6 \
+            libxi6 \
+            libxxf86vm1 \
+            libxfixes3 \
+            libxrender1 \
+            libgl1 \
+            libegl1 \
+            libsm6 \
+            libice6
+
+      - name: Download Blender
+        run: |
+          wget -q https://download.blender.org/release/Blender4.5/blender-4.5.3-linux-x64.tar.xz
+          tar -xf blender-4.5.3-linux-x64.tar.xz
+          mv blender-4.5.3-linux-x64 blender
+
+      - name: Verify Blender
+        run: |
+          ./blender/blender --background --version
+
+      - name: Render Animation
+        run: |
+          mkdir -p output
+
+          ./blender/blender \
+            --background \
+            --python cinematic_physics.py
+
+      - name: Upload Rendered Video
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-physics-video
+          path: |
+            cinematic_physics.mp4
+            output/**
+          if-no-files-found: error
+          retention-days: 7
+          
