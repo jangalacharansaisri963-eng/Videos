@@ -12,8 +12,11 @@ FRAME_END = FPS * DURATION
     
 RES_X = 1280    
 RES_Y = 720    
-    
-OUTPUT = os.path.abspath("cinematic_physics.mp4")    
+
+# Output directory setup for GitHub Actions runner
+OUTPUT_DIR = os.path.abspath("output")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+OUTPUT = os.path.join(OUTPUT_DIR, "cinematic_physics.mp4")    
 BG_PATH = os.path.abspath("1789740957857.png")    
     
 random.seed(42)    
@@ -191,9 +194,9 @@ for i, (mat, pos, radius, velocity) in enumerate(objects):
     rb.linear_damping = 0.05    
     rb.angular_damping = 0.12    
     
-    # Enable initial velocity properly
-    rb.use_start_linear = True
-    rb.linear_velocity = velocity
+    # Correct Blender 4.5+ velocity properties
+    rb.use_start_linear_velocity = True
+    rb.initial_linear_velocity = velocity
     
     dynamic_objects.append(obj)    
     obj.select_set(False)    
@@ -350,7 +353,8 @@ if scene.rigidbody_world:
     
 scene.render.filepath = OUTPUT    
     
-bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath("cinematic_physics.blend"))    
+bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUTPUT_DIR, "cinematic_physics.blend"))    
 bpy.ops.render.render(animation=True)    
     
 print("Render Complete:", OUTPUT)
+           
