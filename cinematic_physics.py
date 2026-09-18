@@ -27,7 +27,7 @@ scene.render.resolution_x = RES_X
 scene.render.resolution_y = RES_Y    
 scene.render.resolution_percentage = 100    
 scene.render.fps = FPS    
-scene.render.fps_base = 1.0  # Proper frame rate handling for Blender 4.x
+scene.render.fps_base = 1.0  
     
 scene.render.image_settings.file_format = "FFMPEG"    
 scene.render.ffmpeg.format = "MPEG4"    
@@ -191,8 +191,9 @@ for i, (mat, pos, radius, velocity) in enumerate(objects):
     rb.linear_damping = 0.05    
     rb.angular_damping = 0.12    
     
-    rb.kinematic = False    
-    obj["initial_velocity"] = velocity    
+    # Enable initial velocity properly
+    rb.use_start_linear = True
+    rb.linear_velocity = velocity
     
     dynamic_objects.append(obj)    
     obj.select_set(False)    
@@ -226,11 +227,6 @@ for obj in [ground] + [
     obj.rigid_body.restitution = 0.72    
     
     obj.select_set(False)    
-    
-# ------ Initial Velocities ------ #    
-    
-for obj, (_, _, _, velocity) in zip(dynamic_objects, objects):    
-    obj.rigid_body.linear_velocity = velocity    
     
 # ------ World Background ------ #    
     
@@ -358,4 +354,3 @@ bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath("cinematic_physics.blend"))
 bpy.ops.render.render(animation=True)    
     
 print("Render Complete:", OUTPUT)
-    
